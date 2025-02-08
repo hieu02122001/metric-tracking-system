@@ -13,6 +13,10 @@ export function getTypeOfUnit(unit: string): number | undefined {
   return Object.values(TYPE).find(type => type.UNITS.includes(unit))?.VALUE
 }
 
+export function isUnitMatchType(unit: string, type: number): boolean {
+  return getTypeOfUnit(unit) === type
+}
+
 export function isValidDate(date: string): boolean {
   if (!DATE_REGEX.test(date)) {
     return false

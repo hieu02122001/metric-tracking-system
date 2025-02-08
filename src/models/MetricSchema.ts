@@ -1,7 +1,15 @@
 import z from 'zod'
-import { TYPE, TYPE_VALUES } from '../constants'
 import { DATE_INVALID, TYPE_INVALID, UNIT_INVALID } from '../error-messages.ts'
-import { isValidDate, isValidType, isValidUnit } from '../helpers'
+import { getTypeOfUnit, isUnitMatchType, isValidDate, isValidType, isValidUnit } from '../helpers'
+import isNil from 'lodash/fp/isNil'
+
+const numberSchema = z.union([
+  z
+    .string()
+    .transform(value => parseInt(value))
+    .refine(value => typeof value === 'number'),
+  z.number()
+])
 
 export const addMetricSchema = z
   .object({
@@ -11,3 +19,11 @@ export const addMetricSchema = z
   })
   .refine(data => isValidUnit(data.unit), { message: UNIT_INVALID })
 export type AddMetricInput = z.infer<typeof addMetricSchema>
+
+export const getMetricsSchema = z
+  .object({
+    type: numberSchema.refine(value => isValidType(value), { message: TYPE_INVALID }),
+    unit: z.string().nullable().optional()
+  })
+  .refine(data => isNil(data.unit) || isUnitMatchType(data.unit, data.type), { message: UNIT_INVALID })
+export type GetMetricsInput = z.infer<typeof getMetricsSchema>

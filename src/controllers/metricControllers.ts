@@ -1,9 +1,8 @@
 import { Request, Response } from 'express'
-import prisma from '../services/database'
-import { addMetricSchema } from '../models/MetricSchema'
+import { addMetricSchema, getMetricsSchema } from '../models/MetricSchema'
 import { getTypeOfUnit } from '../helpers'
 import { METRIC_EXISTS, UNIT_INVALID } from '../error-messages.ts'
-import { createMetric, findFirstMetrics } from '../services/metricService'
+import { convertMetrics, createMetric, findFirstMetrics, findMetrics } from '../services/metricService'
 
 export async function addMetric(req: Request, res: Response) {
   const input = addMetricSchema.safeParse(req.body)
@@ -45,6 +44,41 @@ export async function addMetric(req: Request, res: Response) {
     })
 
     res.status(201).send(metric)
+  } catch (error) {
+    console.log(error)
+    res.status(500).send({ message: 'Internal server error' })
+  }
+
+  return
+}
+
+export async function getMetrics(req: Request, res: Response) {
+  const input = getMetricsSchema.safeParse(req.query)
+
+  if (!input.success) {
+    res.status(400).send({ error: input.error.errors })
+    return
+  }
+
+  const { type, unit } = input.data
+  const { id: userId } = req.user
+
+  try {
+    const metrics = await findMetrics({
+      where: {
+        userId,
+        type
+      }
+    })
+
+    if (!unit) {
+      res.send(metrics)
+      return
+    }
+
+    const convertedMetrics = convertMetrics(metrics, unit)
+
+    res.send(convertedMetrics)
   } catch (error) {
     console.log(error)
     res.status(500).send({ message: 'Internal server error' })
