@@ -72,3 +72,21 @@ function convertTemperature(value: number, from: string, to: string) {
       return baseValue
   }
 }
+
+export function getDataForChart(metrics: Metric[], unit?: string | null): Metric[] {
+  const groupedMetrics = metrics.reduce((acc, metric) => {
+    const date = metric.date.toISOString().split('T')[0]
+
+    if (!acc[date] || acc[date].date < metric.date) {
+      acc[date] = metric
+    }
+
+    return acc
+  }, {} as Record<string, Metric>)
+
+  if (!unit) {
+    return Object.values(groupedMetrics)
+  }
+
+  return convertMetrics(Object.values(groupedMetrics), unit)
+}

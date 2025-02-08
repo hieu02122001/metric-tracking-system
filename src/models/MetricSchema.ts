@@ -1,6 +1,6 @@
 import z from 'zod'
-import { DATE_INVALID, TYPE_INVALID, UNIT_INVALID } from '../error-messages.ts'
-import { getTypeOfUnit, isUnitMatchType, isValidDate, isValidType, isValidUnit } from '../helpers'
+import { DATE_INVALID, DATE_PERIOD_INVALID, TYPE_INVALID, UNIT_INVALID } from '../error-messages.ts'
+import { getTypeOfUnit, isUnitMatchType, isValidDate, isValidDatePeriod, isValidType, isValidUnit } from '../helpers'
 import isNil from 'lodash/fp/isNil'
 
 const numberSchema = z.union([
@@ -27,3 +27,12 @@ export const getMetricsSchema = z
   })
   .refine(data => isNil(data.unit) || isUnitMatchType(data.unit, data.type), { message: UNIT_INVALID })
 export type GetMetricsInput = z.infer<typeof getMetricsSchema>
+
+export const getChartDataSchema = z
+  .object({
+    type: numberSchema.refine(value => isValidType(value), { message: TYPE_INVALID }),
+    datePeriod: z.string().refine(value => isValidDatePeriod(value), { message: DATE_PERIOD_INVALID }),
+    unit: z.string().nullable().optional()
+  })
+  .refine(data => isNil(data.unit) || isUnitMatchType(data.unit, data.type), { message: UNIT_INVALID })
+export type GetChartDataInput = z.infer<typeof getChartDataSchema>

@@ -1,5 +1,5 @@
 import isNaN from 'lodash/fp/isNaN'
-import { DATE_REGEX, TYPE, TYPE_VALUES, UNIT_VALUES } from '../constants'
+import { DATE_PERIOD_REGEX, DATE_REGEX, TYPE, TYPE_VALUES, UNIT_VALUES } from '../constants'
 
 export function isValidType(type: number): boolean {
   return TYPE_VALUES.includes(type)
@@ -25,4 +25,22 @@ export function isValidDate(date: string): boolean {
   const dateObj = new Date(date)
 
   return !isNaN(dateObj.getTime())
+}
+
+export function isValidDatePeriod(datePeriod: string): boolean {
+  if (!DATE_PERIOD_REGEX.test(datePeriod)) {
+    return false
+  }
+
+  const [startDate, endDate] = getDatesFromDatePeriod(datePeriod)
+
+  return !isNaN(startDate.getTime()) && !isNaN(endDate.getTime()) && startDate <= endDate
+}
+
+export function getDatesFromDatePeriod(datePeriod: string): [Date, Date] {
+  const [startDate, endDate] = datePeriod.split(',')
+  const startDateObj = new Date(startDate)
+  const endDateObj = new Date(endDate)
+
+  return [startDateObj, endDateObj]
 }

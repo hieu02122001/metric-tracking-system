@@ -1,8 +1,8 @@
 import { Request, Response } from 'express'
-import { addMetricSchema, getMetricsSchema } from '../models/MetricSchema'
-import { getTypeOfUnit } from '../helpers'
+import { addMetricSchema, getChartDataSchema, getMetricsSchema } from '../models/MetricSchema'
+import { getDatesFromDatePeriod, getTypeOfUnit } from '../helpers'
 import { METRIC_EXISTS, UNIT_INVALID } from '../error-messages.ts'
-import { convertMetrics, createMetric, findFirstMetrics, findMetrics } from '../services/metricService'
+import { convertMetrics, createMetric, findFirstMetrics, findMetrics, getDataForChart } from '../services/metricService'
 
 export async function addMetric(req: Request, res: Response) {
   const input = addMetricSchema.safeParse(req.body)
@@ -79,6 +79,44 @@ export async function getMetrics(req: Request, res: Response) {
     const convertedMetrics = convertMetrics(metrics, unit)
 
     res.send(convertedMetrics)
+  } catch (error) {
+    console.log(error)
+    res.status(500).send({ message: 'Internal server error' })
+  }
+
+  return
+}
+
+export async function getChartData(req: Request, res: Response) {
+  const input = getChartDataSchema.safeParse(req.query)
+
+  if (!input.success) {
+    res.status(400).send({ error: input.error.errors })
+    return
+  }
+
+  const { id: userId } = req.user
+  const { type, datePeriod, unit } = input.data
+  const [startDate, endDate] = getDatesFromDatePeriod(datePeriod)
+
+  try {
+    const metrics = await findMetrics({
+      where: {
+        userId,
+        type,
+        date: {
+          gte: startDate,
+          lte: endDate
+        }
+      },
+      orderBy: {
+        date: 'asc'
+      }
+    })
+
+    const chartData = getDataForChart(metrics, unit)
+
+    res.send(chartData)
   } catch (error) {
     console.log(error)
     res.status(500).send({ message: 'Internal server error' })
