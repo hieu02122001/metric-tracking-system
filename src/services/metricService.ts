@@ -45,7 +45,6 @@ function convertDistance(value: number, from: string, to: string): number {
 }
 
 function convertTemperature(value: number, from: string, to: string) {
-  // define constant for 273.15
   const KELVIN = 273.15
   // Convert the value to the base unit (Celsius)
   let baseValue

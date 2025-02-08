@@ -1,6 +1,6 @@
 import z from 'zod'
 import { DATE_INVALID, DATE_PERIOD_INVALID, TYPE_INVALID, UNIT_INVALID } from '../error-messages.ts'
-import { getTypeOfUnit, isUnitMatchType, isValidDate, isValidDatePeriod, isValidType, isValidUnit } from '../helpers'
+import { isUnitMatchType, isValidDate, isValidDatePeriod, isValidType, isValidUnit } from '../helpers'
 import isNil from 'lodash/fp/isNil'
 
 const numberSchema = z.union([
