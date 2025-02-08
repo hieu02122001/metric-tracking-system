@@ -2,10 +2,12 @@ import express from 'express'
 import bodyParser from 'body-parser'
 import dotenv from 'dotenv'
 import routes from './routes'
+import authHandler from './middlewares/auth'
 
 dotenv.config()
 
 const app = express()
+app.use(authHandler)
 app.use(bodyParser.json())
 
 app.use('/api', routes)

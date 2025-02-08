@@ -11,16 +11,16 @@
     "setup:env": "cp .env.template .env",
     "prisma:migrate": "yarn prisma migrate dev --schema=./prisma/schema.prisma",
     "prisma:generate": "yarn prisma generate --schema=./prisma/schema.prisma",
-    "dev": "concurrently \"tsc --watch\" \"nodemon -q dist/index.js --exec 'node --es-module-specifier-resolution=node '\""
+    "dev": "concurrently \"tsc --watch\" \"nodemon -q dist/src/index.js --exec 'node --es-module-specifier-resolution=node '\""
   },
   "dependencies": {
+    "@prisma/client": "^5.7.0",
     "body-parser": "^1.20.3",
+    "date-fns": "^2.28.0",
     "dotenv": "^16.0.3",
     "express": "^4.21.2",
-    "date-fns": "^2.28.0",
     "lodash": "^4.17.21",
     "typescript": "^5.7.3",
-    "@prisma/client": "^5.7.0",
     "zod": "3.21.1"
   },
   "devDependencies": {
