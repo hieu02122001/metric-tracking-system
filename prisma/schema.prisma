@@ -1,0 +1,20 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model Metric {
+  id        Int      @id @default(autoincrement())
+  userId    Int      @map("user_id")
+  type      Int      @db.TinyInt // 1: "distance", 2: "temperature"
+  value     Float
+  unit      String   @db.VarChar(10)
+  date      DateTime
+  createdAt DateTime @default(now()) @map("created_at")
+
+  @@map("metric")
+}
